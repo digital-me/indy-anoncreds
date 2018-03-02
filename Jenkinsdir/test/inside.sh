@@ -3,9 +3,10 @@
 # Get the script dir
 SDIR="$(dirname $0)"
 
-PYTHON="$(which 'python3.5')"
-PYTHON_VER_STR="$(${PYTHON} --version)"
-PYTHON_VER="${PYTHON_VER_STR##* }"
+# Inject common script
+source "${SDIR}/../common.sh"
+
+# Define global variables
 TESTONLYSLICE='1/1'
 
 echo "Running Python (v${PYTHON_VER}) testing scripts for ${DIST}:"
