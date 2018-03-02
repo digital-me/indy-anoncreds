@@ -1,71 +1,49 @@
 #!groovy
 
-@Library('SovrinHelpers') _
+// Load Jenkins shared library common to all projects
+def libCmn = [
+	remote:		'https://github.com/digital-me/jenkins-lib-lazy.git',
+	branch:		'devel',
+	credentialsId:	null,
+]
 
-def name = 'indy-anoncreds'
+// Load mandatory common shared library
+echo 'Trying to load common library...'
+library(
+	identifier: "libCmn@${libCmn.branch}",
+	retriever: modernSCM([
+		$class: 'GitSCMSource',
+		remote: libCmn.remote,
+		credentialsId: libCmn.credentialsId
+	])
+)
+echo 'Common shared library loaded'
 
-def testUbuntu = {
-    try {
-        echo 'Ubuntu Test: Checkout csm'
-        checkout scm
+// Initialize configuration
+def config = initConfig('indy-anoncreds')
 
-        helpers.shell('cp setup-charm.sh ci/setup-charm.sh')
-        helpers.shell('sed -ir s/sudo// ci/setup-charm.sh')
+// CI Pipeline - as long as the common library can be loaded
 
-        echo 'Ubuntu Test: Build docker image'
-        def testEnv = dockerHelpers.build(name)
+// Validate the code
+stageDockerPar(
+	'validate',
+	config,
+)
 
-        testEnv.inside {
-            echo 'Ubuntu Test: Install dependencies'
-            testHelpers.installDeps(['pytest-asyncio'])
+// Test the code
+stageDockerPar(
+	'test',
+	config,
+	'--network host',
+)
 
-            echo 'Ubuntu Test: Test'
-            testHelpers.testJunit()
-        }
-    }
-    finally {
-        echo 'Ubuntu Test: Cleanup'
-        step([$class: 'WsCleanup'])
-    }
-}
-
-def testWindows = {
-    echo 'TODO: Implement me'
-}
-
-def testWindowsNoDocker = {
-    try {
-        echo 'Windows No Docker Test: Checkout csm'
-        checkout scm
-
-        testHelpers.createVirtualEnvAndExecute({ python, pip ->
-            echo 'Windows No Docker Test: Install dependencies'
-            testHelpers.installDepsBat(python, pip, ['pytest-asyncio'])
-
-            echo 'Windows No Docker Test: Test'
-            testHelpers.testJunitBat(python, pip)
-        })
-    }
-    finally {
-        echo 'Windows No Docker Test: Cleanup'
-        step([$class: 'WsCleanup'])
-    }
-}
-
-def buildDebUbuntu = { repoName, releaseVersion, sourcePath ->
-    def volumeName = "$name-deb-u1604"
-    if (env.BRANCH_NAME != '' && env.BRANCH_NAME != 'master') {
-        volumeName = "${volumeName}.${BRANCH_NAME}"
-    }
-    if (sh(script: "docker volume ls -q | grep -q '^$volumeName\$'", returnStatus: true) == 0) {
-        sh "docker volume rm $volumeName"
-    }
-    dir('build-scripts/ubuntu-1604') {
-        sh "./build-$name-docker.sh \"$sourcePath\" $releaseVersion $volumeName"
-        sh "./build-3rd-parties-docker.sh $volumeName"
-    }
-    return "$volumeName"
-}
-
-def options = new TestAndPublishOptions()
-testAndPublish(name, [ubuntu: [anoncreds: testUbuntu], windows: [anoncreds: testWindowsNoDocker], windowsNoDocker: [anoncreds: testWindowsNoDocker]], true, options, [ubuntu: buildDebUbuntu])
+// Package the code
+stageDockerPar(
+	'package',
+	config,
+	'',
+	[
+		'build-indy-node.sh',
+		'build-3rd-parties.sh',
+	]
+)
