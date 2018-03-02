@@ -1,0 +1,5 @@
+pip
+setuptools
+pep8
+pep8-naming
+flake8
