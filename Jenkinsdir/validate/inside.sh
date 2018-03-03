@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -ex
 
 # Get the script dir
 SDIR="$(dirname $0)"
