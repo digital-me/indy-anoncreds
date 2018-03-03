@@ -85,7 +85,7 @@ function build_and_install_pbc {
 build_from_pypi base58
 
 # has to happen before building `Charm-Crypto`
-build_and_install_pbc 0.5.14
+#build_and_install_pbc 0.5.14
 
 build_from_pypi Charm-Crypto
 
