@@ -1,9 +1,7 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
 # Get the script dir
 SDIR="$(dirname $0)"
-
-echo "Dist = ${DIST}"
 
 # Inject common script
 source "${SDIR}/../common.sh"
