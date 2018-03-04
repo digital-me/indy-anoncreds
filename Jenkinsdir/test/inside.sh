@@ -9,11 +9,6 @@ source "${SDIR}/../common.sh"
 # Define global variables
 TESTONLYSLICE='1/1'
 
-echo "Prepare and execute Charm setup script..."
-sed -r 's/sudo//' setup-charm.sh > "${SDIR}/setup-charm.sh"
-
-/bin/bash -e "${SDIR}/setup-charm.sh"
-
 echo "Running Python (v${PYTHON_VER}) testing scripts for ${DIST}:"
 
 TESTDIR='anoncreds'
