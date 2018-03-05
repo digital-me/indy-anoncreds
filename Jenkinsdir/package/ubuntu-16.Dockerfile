@@ -50,6 +50,25 @@ RUN apt-get -y update \
 #	libindy-crypto=0.2.0 \
 #	libindy=1.3.1~403 \
 
+# Install extra deps to package PBC
+RUN apt-get -y update \
+	&& apt-get -y install \
+	debhelper \
+	autotools-dev \
+	libreadline-dev \
+	&& apt-get clean
+
+# Install extra deps to install Ruby gems
+RUN apt-get -y update \
+	&& apt-get -y install \
+	ruby \
+	ruby-dev \
+	rubygems \
+	&& apt-get clean
+
+# Install FPM gem to package Python modules
+RUN gem install --no-ri --no-rdoc fpm
+
 # Get script directory from build argument
 ARG dir=.
 
@@ -60,3 +79,8 @@ RUN ./build-pbc.sh install '0.5.14' 'https://github.com/digital-me/pbc.git'
 # Copy and install requirements
 COPY ${dir}/requirements.txt requirements.txt
 RUN pip3 install --upgrade -r requirements.txt
+
+# Add user to build and package
+ARG uid=1000
+ARG username=indy
+RUN useradd -ms /bin/bash -u "${uid}" "${username}"
