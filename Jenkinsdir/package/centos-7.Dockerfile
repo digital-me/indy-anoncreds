@@ -48,10 +48,18 @@ RUN yum -q clean expire-cache \
 	bison \
 	libtool \
 	automake \
+	file \
 	&& yum -q clean packages
 #	python3-nacl \
 #	libindy-crypto=0.2.0 \
 #	libindy=1.3.1~403 \
+
+# Get script directory from build argument
+ARG dir=.
+
+# Build and install PBC from source
+COPY ${dir}/../build-pbc.sh build-pbc.sh
+RUN ./build-pbc.sh install
 
 # Install extra deps to package PBC
 RUN yum -q clean expire-cache \
@@ -69,13 +77,6 @@ RUN yum -q clean expire-cache \
 
 # Install FPM gem to package Python modules
 RUN gem install --no-ri --no-rdoc fpm
-
-# Get script directory from build argument
-ARG dir=.
-
-# Build and install PBC from source
-COPY ${dir}/../build-pbc.sh build-pbc.sh
-RUN ./build-pbc.sh install '0.5.14' 'https://github.com/digital-me/pbc.git'
 
 # Copy and install requirements
 COPY ${dir}/requirements.txt requirements.txt

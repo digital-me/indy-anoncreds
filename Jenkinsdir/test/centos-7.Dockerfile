@@ -38,7 +38,7 @@ RUN yum -q clean expire-cache \
 	make \
 	&& yum -q clean packages
 
-# Install extra deps \
+# Install extra deps to build PBC
 RUN yum -q clean expire-cache \
 	&& yum -y install \
 	which \
@@ -48,6 +48,7 @@ RUN yum -q clean expire-cache \
 	bison \
 	libtool \
 	automake \
+	file \
 	&& yum -q clean packages
 #	python3-nacl \
 #	libindy-crypto=0.2.0 \
@@ -58,7 +59,7 @@ ARG dir=.
 
 # Build and install PBC from source
 COPY ${dir}/../build-pbc.sh build-pbc.sh
-RUN ./build-pbc.sh install '0.5.14' 'https://github.com/digital-me/pbc.git'
+RUN ./build-pbc.sh install
 
 # Copy and install requirements
 COPY ${dir}/requirements.txt requirements.txt

@@ -1,7 +1,8 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
-# Get the script dir
+# Get the script and work dir
 SDIR="$(dirname $0)"
+WDIR="${PWD}"
 
 # Inject common script
 source "${SDIR}/../common.sh"
@@ -46,7 +47,7 @@ function build_from_pypi {
 
 	fpm --input-type 'python' \
 		--output-type "${PKG_EXT}" \
-		--verbose \
+		--log warn \
 		--python-package-name-prefix "${PYTHON_PREFIX}" \
 		--python-bin "${PYTHON}" \
 		--python-pip "${PIP}" \
@@ -67,8 +68,9 @@ function build_from_pypi {
 }
 
 # Build and package PBC required by Charm-Crypto
-${SDIR}/../build-pbc.sh "${PKG_EXT}" '0.5.14' 'https://github.com/digital-me/pbc.git'
-mv -f *.${PKG_EXT} ${OUTPUT_PATH}
+pushd "${OUTPUT_PATH}"
+${WDIR}/${SDIR}/../build-pbc.sh "${PKG_EXT}" 'indy-0.5.14' 'https://github.com/digital-me/pbc.git'
+popd
 
 build_from_pypi base58
 build_from_pypi Charm-Crypto
