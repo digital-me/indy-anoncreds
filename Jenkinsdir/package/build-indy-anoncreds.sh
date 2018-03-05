@@ -8,11 +8,16 @@ source "${SDIR}/../common.sh"
 
 INPUT_PATH=${1:-.}
 VERSION=${2:-'0.0.0'}
-OUTPUT_PATH=${3:-.}
+
+# Prepare folder to store packages
+OUTPUT_PATH="${3:-"${PWD}/dist"}"
+[ -d "${OUTPUT_PATH}" ] || mkdir -p "${OUTPUT_PATH}" 
 
 PACKAGE_NAME='indy-anoncreds'
 POSTINST_TMP="postinst-${PACKAGE_NAME}"
 PREREM_TMP="prerm-${PACKAGE_NAME}"
+
+pushd "${SDIR}"
 
 ./prepare-package.sh ${INPUT_PATH} ${VERSION}
 
@@ -34,3 +39,5 @@ fpm --input-type 'python' \
 	--name "${PACKAGE_NAME}" \
 	--package "${OUTPUT_PATH}" \
 	"${INPUT_PATH}"
+
+popd
