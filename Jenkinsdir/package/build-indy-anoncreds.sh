@@ -6,7 +6,7 @@ SDIR="$(dirname $0)"
 # Inject common script
 source "${SDIR}/../common.sh"
 
-INPUT_PATH=${1:-.}
+INPUT_PATH="${1:-${PWD}}"
 VERSION=${2:-'0.0.0'}
 
 # Prepare folder to store packages
