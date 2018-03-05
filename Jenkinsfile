@@ -43,7 +43,7 @@ stageDockerPar(
 	config,
 	'',
 	[
-		'build-indy-node.sh',
+		'build-indy-anoncreds.sh',
 		'build-3rd-parties.sh',
 	]
 )
