@@ -82,5 +82,5 @@ RUN pip3 install --upgrade -r requirements.txt
 
 # Add user to build and package
 ARG uid=1000
-ARG username=indy
-RUN useradd -ms /bin/bash -u "${uid}" "${username}"
+ARG user=indy
+RUN useradd -ms /bin/bash -u "${uid}" "${user}"

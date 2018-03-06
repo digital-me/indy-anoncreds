@@ -2,8 +2,8 @@
 
 // Load Jenkins shared library common to all projects
 def libCmn = [
-	remote:		'https://github.com/digital-me/jenkins-lib-lazy.git',
-	branch:		'devel',
+	remote:		'https://code.in.digital-me.nl/git/DEVops/JenkinsLibLazy.git',
+	branch:		'priv_devel',
 	credentialsId:	null,
 ]
 
