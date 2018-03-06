@@ -48,6 +48,7 @@ RUN yum -q clean expire-cache \
 	bison \
 	libtool \
 	automake \
+	file \
 	&& yum -q clean packages
 #	python3-nacl \
 #	libindy-crypto=0.2.0 \
