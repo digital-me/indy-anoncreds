@@ -43,7 +43,7 @@ case "${TARGET}" in
 		./configure --silent
 		make --silent > /dev/null
 		make --silent install > /dev/null
-		[ -d '/usr/lib64' ] && libtool --finish /usr/lib64 || libtool --finish /usr/lib
+		ldconfig
 	;;
 	rpm)
 		mkdir -p rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS,TMP}
