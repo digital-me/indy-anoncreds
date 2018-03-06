@@ -38,7 +38,7 @@ RUN yum -q clean expire-cache \
 	make \
 	&& yum -q clean packages
 
-# Install extra deps \
+# Install extra deps to build PBC
 RUN yum -q clean expire-cache \
 	&& yum -y install \
 	which \
