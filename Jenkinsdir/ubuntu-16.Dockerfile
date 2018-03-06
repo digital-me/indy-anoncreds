@@ -49,3 +49,11 @@ RUN apt-get -y update \
 ARG dir=.
 COPY ${dir}/requirements.txt requirements.txt
 RUN pip3 install --upgrade -r requirements.txt
+
+# Add user to build and package
+ARG uid=1000
+ARG user=indy
+ARG gid=1000
+ARG group=indy
+
+RUN groupadd -g "${gid}" "${group}" && useradd -ms /bin/bash -g "${group}" -u "${uid}" "${user}"

@@ -63,3 +63,11 @@ RUN ./build-pbc.sh install '0.5.14' 'https://github.com/digital-me/pbc.git'
 # Copy and install requirements
 COPY ${dir}/requirements.txt requirements.txt
 RUN pip3.5 install --upgrade -r requirements.txt
+
+# Add user to build and package
+ARG uid=1000
+ARG user=indy
+ARG gid=1000
+ARG group=indy
+
+RUN groupadd -g "${gid}" "${group}" && useradd -ms /bin/bash -g "${group}" -u "${uid}" "${user}"

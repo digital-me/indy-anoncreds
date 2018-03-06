@@ -83,5 +83,8 @@ RUN pip3.5 install --upgrade -r requirements.txt
 
 # Add user to build and package
 ARG uid=1000
-ARG username=indy
-RUN useradd -ms /bin/bash -u "${uid}" "${username}"
+ARG user=indy
+ARG gid=1000
+ARG group=indy
+
+RUN groupadd -g "${gid}" "${group}" && useradd -ms /bin/bash -g "${group}" -u "${uid}" "${user}"
