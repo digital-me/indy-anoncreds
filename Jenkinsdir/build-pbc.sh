@@ -15,14 +15,6 @@ case "$2" in
 	;;
 esac
 
-function make_pbc {
-	git clone "${GIT_URL}" .
-	git checkout ${GIT_REF}
-	./setup
-	./configure
-	make
-}
-
 # Prepare temporary build folder
 # with auto removal upon exit
 # and only if no environment variable defined
@@ -35,36 +27,41 @@ fi
 WDIR="${PWD}"
 [ -d "${WDIR}" ] || mkdir "${WDIR}"
 
+# Enter build dir
 pushd ${BDIR}
+
+# Download and prepare source code
+git clone "${GIT_URL}" .
+git checkout ${GIT_REF}
+./setup
 
 case "${TARGET}" in
 	test)
-		make_pbc
+		./configure
+		make
 	;;
 	install)
-		make_pbc
+		./configure
+		make
 		make install
 	;;
 	rpm)
 		mkdir -p rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS,TMP}
+	git archive --format=zip --prefix="pbc-${GIT_REF}/" -o "rpmbuild/SOURCES/${GIT_REF}.zip" "${GIT_REF}"
+		cp redhat/pbc.spec rpmbuild/SPECS
 		pushd rpmbuild
-		pushd SOURCES
-		wget "https://github.com/digital-me/pbc/archive/${GIT_REF}.zip"
-		popd
-		unzip "SOURCES/${GIT_REF}.zip" -d TMP "pbc-${GIT_REF}/redhat/pbc.spec"
-		mv "TMP/pbc-${GIT_REF}/redhat/pbc.spec" SPECS
 		/usr/bin/rpmbuild --define "_topdir ${PWD}" --define "git_ref ${GIT_REF}" -bb SPECS/pbc.spec  
 		mv RPMS/*/*.rpm "${WDIR}"
 		popd
 	;;
 	deb)
-		make_pbc
-		/usr/bin/dpkg-buildpackage -uc -us
+		/usr/bin/dpkg-buildpackage -b -uc -us
+		rm -f ../libpbc_*.changes	# Avoid polluting working dir 
 	;;
 	*)
 		echo "Unknown TARGET (${TARGET})" && exit 1
 	;;
 esac
 
-# Exit sub-folder
+# Exit build dir
 popd
