@@ -43,6 +43,7 @@ case "${TARGET}" in
 		./configure --silent
 		make --silent > /dev/null
 		make --silent install > /dev/null
+		grep -q '/usr/local/lib' /etc/ld.so.conf.d/*.conf || echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
 		/sbin/ldconfig
 	;;
 	rpm)
