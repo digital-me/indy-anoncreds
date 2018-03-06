@@ -43,14 +43,14 @@ case "${TARGET}" in
 		./configure --silent
 		make --silent > /dev/null
 		make --silent install > /dev/null
-		ldconfig
+		/sbin/ldconfig
 	;;
 	rpm)
 		mkdir -p rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS,TMP}
 		git archive --format=zip --prefix="pbc-${GIT_REF}/" -o "rpmbuild/SOURCES/${GIT_REF}.zip" "${GIT_REF}"
 		cp redhat/pbc.spec rpmbuild/SPECS
 		pushd rpmbuild
-		/usr/bin/rpmbuild --quiet --define "_topdir ${PWD}" --define "git_ref ${GIT_REF}" -bb SPECS/pbc.spec  
+		/usr/bin/rpmbuild --quiet --define "_topdir ${PWD}" --define "git_ref ${GIT_REF}" -bb SPECS/pbc.spec
 		mv RPMS/*/*.rpm "${WDIR}"
 		popd
 	;;
@@ -58,7 +58,6 @@ case "${TARGET}" in
 		echo "Packaging in ${PWD}:"
 		/usr/bin/dpkg-buildpackage -b -uc -us > /dev/null
 		rm -f ../libpbc_*.changes	# Avoid polluting working dir
-		find ../ -name "*.deb" -ls
 		mv ../*.deb "${WDIR}"
 	;;
 	*)
