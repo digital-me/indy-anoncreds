@@ -1,4 +1,4 @@
-#!/bin/bash -xe
+#!/bin/bash -e
 
 # Get the script dir
 SDIR="$(dirname $0)"
@@ -28,7 +28,7 @@ sed -i 's/{package_name}/'${PACKAGE_NAME}'/' 'prerm'
 
 fpm --input-type 'python' \
 	--output-type "${PKG_EXT}" \
-	--verbose \
+	--log warn \
 	--python-package-name-prefix "${PYTHON_PREFIX}" \
 	--python-bin "${PYTHON}" \
 	--exclude '*.pyc' \

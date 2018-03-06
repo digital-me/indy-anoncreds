@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
 # Define variables and parameters
 : ${TARGET:="${1:-test}"}
@@ -23,17 +23,16 @@ if [ -z "${BDIR}" -o ! -d "${BDIR}" ]; then
 	trap "rm -rf ${BDIR}" EXIT
 fi
 
-# Prepare directory to collect packages
+# Save working directory to collect packages later
 WDIR="${PWD}"
-[ -d "${WDIR}" ] || mkdir "${WDIR}"
 
+# Download source code
+git clone "${GIT_URL}" "${BDIR}"
 # Enter build dir
-pushd ${BDIR}
-
-# Download and prepare source code
-git clone "${GIT_URL}" .
-git checkout ${GIT_REF}
-./setup
+pushd "${BDIR}"
+# Prepare working dir
+git checkout "${GIT_REF}"
+./setup > /dev/null
 
 case "${TARGET}" in
 	test)
@@ -41,22 +40,25 @@ case "${TARGET}" in
 		make
 	;;
 	install)
-		./configure
-		make
-		make install
+		./configure --silent
+		make --silent > /dev/null
+		make --silent install > /dev/null
 	;;
 	rpm)
 		mkdir -p rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS,TMP}
-	git archive --format=zip --prefix="pbc-${GIT_REF}/" -o "rpmbuild/SOURCES/${GIT_REF}.zip" "${GIT_REF}"
+		git archive --format=zip --prefix="pbc-${GIT_REF}/" -o "rpmbuild/SOURCES/${GIT_REF}.zip" "${GIT_REF}"
 		cp redhat/pbc.spec rpmbuild/SPECS
 		pushd rpmbuild
-		/usr/bin/rpmbuild --define "_topdir ${PWD}" --define "git_ref ${GIT_REF}" -bb SPECS/pbc.spec  
+		/usr/bin/rpmbuild --quiet --define "_topdir ${PWD}" --define "git_ref ${GIT_REF}" -bb SPECS/pbc.spec  
 		mv RPMS/*/*.rpm "${WDIR}"
 		popd
 	;;
 	deb)
-		/usr/bin/dpkg-buildpackage -b -uc -us
-		rm -f ../libpbc_*.changes	# Avoid polluting working dir 
+		echo "Packaging in ${PWD}:"
+		/usr/bin/dpkg-buildpackage -b -uc -us > /dev/null
+		rm -f ../libpbc_*.changes	# Avoid polluting working dir
+		find ../ -name "*.deb" -ls
+		mv ../*.deb "${WDIR}"
 	;;
 	*)
 		echo "Unknown TARGET (${TARGET})" && exit 1
