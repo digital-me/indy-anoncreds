@@ -53,7 +53,7 @@ case "${TARGET}" in
 		git archive --format=zip --prefix="pbc-${GIT_REF}/" -o "rpmbuild/SOURCES/${GIT_REF}.zip" "${GIT_REF}"
 		cp redhat/libpbc.spec rpmbuild/SPECS
 		pushd rpmbuild
-		/usr/bin/rpmbuild --quiet --define "_topdir ${PWD}" --define "git_ref ${GIT_REF}" -bb SPECS/libpbc.spec
+		/usr/bin/rpmbuild --quiet --define "_topdir ${PWD}" --define "_git_ref ${GIT_REF}" -bb SPECS/libpbc.spec
 		mv RPMS/*/*.rpm "${WDIR}"
 		popd
 	;;
