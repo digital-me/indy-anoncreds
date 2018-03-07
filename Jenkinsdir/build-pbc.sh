@@ -7,8 +7,9 @@
 # Map version to GIT ref if required
 case "$2" in
 	'')
-	# Use a specific commit to package on Ubuntu
-		GIT_REF='656ae0c90e120eacd3dc0d76dbc9504f8aca4ba8'
+	# Use a specific branch to package for Ubuntu and Redhat
+		GIT_REF='indy-0.5.14'
+		GIT_URL='https://github.com/digital-me/pbc.git'
 	;;
 	*)
 		GIT_REF="$2"

@@ -59,7 +59,7 @@ ARG dir=.
 
 # Build and install PBC from source
 COPY ${dir}/../build-pbc.sh build-pbc.sh
-RUN ./build-pbc.sh install '0.5.14' 'https://github.com/digital-me/pbc.git'
+RUN ./build-pbc.sh install
 
 # Copy and install requirements
 COPY ${dir}/requirements.txt requirements.txt

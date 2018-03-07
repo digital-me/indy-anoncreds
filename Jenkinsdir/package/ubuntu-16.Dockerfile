@@ -55,7 +55,7 @@ ARG dir=.
 
 # Build and install PBC from source
 COPY ${dir}/../build-pbc.sh build-pbc.sh
-RUN ./build-pbc.sh install '0.5.14' 'https://github.com/digital-me/pbc.git'
+RUN ./build-pbc.sh install
 
 # Install extra deps to package PBC
 RUN apt-get -y update \
