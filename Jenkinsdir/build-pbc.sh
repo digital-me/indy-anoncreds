@@ -45,7 +45,7 @@ case "${TARGET}" in
 		make --silent > /dev/null
 		make --silent install > /dev/null
 		# Make sure other apps will access the locally installed lib
-		grep -q '/usr/local/lib' /etc/ld.so.conf.d/*.conf || echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
+		grep -R '/usr/local/lib' /etc/ld.so.conf.d || echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
 		/sbin/ldconfig
 	;;
 	rpm)
