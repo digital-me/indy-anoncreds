@@ -37,6 +37,10 @@ stageDockerPar(
 	'--network host',
 )
 
+//archivePackage = {
+//        archiveArtifacts(artifacts: 'dist/*', onlyIfSuccessful: true)
+//}
+
 // Package the code
 stageDockerPar(
 	'package',
@@ -45,5 +49,6 @@ stageDockerPar(
 	[
 		'build-indy-anoncreds.sh',
 		'build-3rd-parties.sh',
-	]
+	],
+	{ archiveArtifacts(artifacts: 'dist/*', onlyIfSuccessful: true) },
 )
