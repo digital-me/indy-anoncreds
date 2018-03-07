@@ -69,7 +69,7 @@ function build_from_pypi {
 
 # Build and package PBC required by Charm-Crypto
 pushd "${OUTPUT_PATH}"
-${WDIR}/${SDIR}/../build-pbc.sh "${PKG_EXT}" '0.5.14' 'https://github.com/digital-me/pbc.git'
+${WDIR}/${SDIR}/../build-pbc.sh "${PKG_EXT}" 'indy-0.5.14' 'https://github.com/digital-me/pbc.git'
 popd
 
 build_from_pypi base58
