@@ -44,12 +44,13 @@ case "${TARGET}" in
 		./configure --silent
 		make --silent > /dev/null
 		make --silent install > /dev/null
+		# Make sure other apps will access the locally installed lib
 		grep -q '/usr/local/lib' /etc/ld.so.conf.d/*.conf || echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
 		/sbin/ldconfig
 	;;
 	rpm)
 		mkdir -p rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS,TMP}
-		git archive --format=zip --prefix="libpbc-${GIT_REF}/" -o "rpmbuild/SOURCES/${GIT_REF}.zip" "${GIT_REF}"
+		git archive --format=zip --prefix="pbc-${GIT_REF}/" -o "rpmbuild/SOURCES/${GIT_REF}.zip" "${GIT_REF}"
 		cp redhat/libpbc.spec rpmbuild/SPECS
 		pushd rpmbuild
 		/usr/bin/rpmbuild --quiet --define "_topdir ${PWD}" --define "git_ref ${GIT_REF}" -bb SPECS/libpbc.spec
