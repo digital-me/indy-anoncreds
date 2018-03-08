@@ -35,11 +35,15 @@ stageDockerPar(
 	'test',
 	config,
 	'--network host',
+	[
+		'inside.sh',
+	],
+	null,
+	{
+		archiveArtifacts(artifacts: 'test-results/*.txt', allowEmptyArchive: true)
+		junit(testResults: 'test-results/*.xml', allowEmptyResults: true)
+	},
 )
-
-//archivePackage = {
-//        archiveArtifacts(artifacts: 'dist/*', onlyIfSuccessful: true)
-//}
 
 // Package the code
 stageDockerPar(
@@ -51,5 +55,7 @@ stageDockerPar(
 		'build-3rd-parties.sh',
 	],
 	null,
-	{ archiveArtifacts(artifacts: 'dist/*', onlyIfSuccessful: true) },
+	{
+		archiveArtifacts(artifacts: 'dist/*', onlyIfSuccessful: true)
+	},
 )
