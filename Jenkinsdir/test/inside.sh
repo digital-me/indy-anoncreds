@@ -6,11 +6,28 @@ SDIR="$(dirname $0)"
 # Inject common script
 source "${SDIR}/../common.sh"
 
-# Define global variables
-TESTONLYSLICE='1/1'
-
 echo "Running Python (v${PYTHON_VER}) testing scripts for ${DIST}:"
 
-TESTDIR='anoncreds'
-RESFILE="test-result-${TESTDIR#*_}.txt"
-PYTHONASYNCIODEBUG='0' ${PYTHON} runner.py --pytest "${PYTHON} -m pytest" --dir ${TESTDIR} --output "${RESFILE}" --test-only-slice "${TESTONLYSLICE}"
+# Prepare test(s)
+: ${RUNNER:=0}								# Apparently not use very often
+: ${TESTONLYSLICE='1/1'}					# Extra parameter for runner 
+: ${RESDIR:='test-results'}					# Directory to collect reports
+[ -d "${RESDIR}" ] || mkdir -p "${RESDIR}"	# Create it if not existing
+RESFILE="${RESDIR}/${TESTDIR#*_}"			# Report path w/o extension
+
+# Run test(s)
+while read TESTDIR; do
+	if [ "${RUNNER}" -eq 1 ]; then
+		PYTHONASYNCIODEBUG='0' \
+			${PYTHON} runner.py \
+			--pytest "${PYTHON} -m pytest" \
+			--dir "${TESTDIR}" \
+			--output "${RESFILE}.txt" \
+			--test-only-slice "${TESTONLYSLICE}"
+	else
+			"${PYTHON}" -m pytest \
+			--color=yes \
+			--junit-xml="${RESFILE}.xml" \
+			${TESTDIR}
+	fi
+done < <(find . -maxdepth 3 -path '*/test/*' -name 'conftest.py' -print | cut -d'/' -f2)
