@@ -12,6 +12,7 @@ RUN yum -q clean expire-cache \
 	git \
 	wget \
 	unzip \
+	which \
 	&& yum -q clean packages
 
 # Install Python 3.5 from PIUS repo
@@ -46,15 +47,18 @@ RUN yum -q clean expire-cache \
 #	libindy=1.3.1~403 \
 #	&& yum -q clean packages
 
-# Copy and install requirements
-ARG dir=.
-COPY ${dir}/requirements.txt requirements.txt
-RUN pip3.5 install --upgrade -r requirements.txt
-
-# Add user to build and package
+# Parameters for default user:group
 ARG uid=1000
 ARG user=indy
 ARG gid=1000
 ARG group=indy
 
+# Add user to build
 RUN groupadd -g "${gid}" "${group}" && useradd -ms /bin/bash -g "${group}" -u "${uid}" "${user}"
+
+# Get script directory from lazyLib
+ARG dir=.
+
+# Copy and install requirements
+COPY ${dir}/requirements.txt requirements.txt
+RUN pip3.5 install --upgrade -r requirements.txt

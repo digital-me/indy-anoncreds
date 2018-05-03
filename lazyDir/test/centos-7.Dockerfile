@@ -12,6 +12,7 @@ RUN yum -q clean expire-cache \
 	git \
 	wget \
 	unzip \
+	which \
 	&& yum -q clean packages
 
 # Install Python 3.5 from PIUS repo
@@ -41,7 +42,6 @@ RUN yum -q clean expire-cache \
 # Install extra deps to build PBC
 RUN yum -q clean expire-cache \
 	&& yum -y install \
-	which \
 	openssl-devel \
 	gmp-devel \
 	flex \
@@ -54,7 +54,16 @@ RUN yum -q clean expire-cache \
 #	libindy-crypto=0.2.0 \
 #	libindy=1.3.1~403 \
 
-# Get script directory from build argument
+# Parameters for default user:group
+ARG uid=1000
+ARG user=indy
+ARG gid=1000
+ARG group=indy
+
+# Add user to build
+RUN groupadd -g "${gid}" "${group}" && useradd -ms /bin/bash -g "${group}" -u "${uid}" "${user}"
+
+# Get script directory from lazyLib
 ARG dir=.
 
 # Build and install PBC from source
@@ -64,11 +73,3 @@ RUN ./build-pbc.sh install
 # Copy and install requirements
 COPY ${dir}/requirements.txt requirements.txt
 RUN pip3.5 install --upgrade -r requirements.txt
-
-# Add user to build and package
-ARG uid=1000
-ARG user=indy
-ARG gid=1000
-ARG group=indy
-
-RUN groupadd -g "${gid}" "${group}" && useradd -ms /bin/bash -g "${group}" -u "${uid}" "${user}"
