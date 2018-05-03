@@ -1,14 +1,12 @@
 #!groovy
 
-// Load Jenkins shared library common to all projects
+// Load Jenkins shared libraries common to all projects
 def libCmn = [
 	remote:		'https://github.com/digital-me/jenkins-lib-lazy.git',
 	branch:		'master',
 	credentialsId:	null,
 ]
 
-// Load mandatory common shared library
-echo 'Trying to load common library...'
 library(
 	identifier: "libCmn@${libCmn.branch}",
 	retriever: modernSCM([
@@ -17,12 +15,15 @@ library(
 		credentialsId: libCmn.credentialsId
 	])
 )
-echo 'Common shared library loaded'
+
+// Define the directory where the package will be build
+def buildDir = 'dist'
 
 // Initialize configuration
 lazyConfig(
     name: 'indy-anoncreds',
-    dists: [ 'centos-7', 'ubuntu-16', ],
+    inLabels: [ 'centos-7', 'ubuntu-16', ],
+    noPoll: '(.+_.+)',   // Don't poll private nor deploy branches
 )
 
 // CI Pipeline - as long as the common library can be loaded
@@ -52,7 +53,7 @@ lazyStage {
         run: [ 'build-indy-anoncreds.sh', 'build-3rd-parties.sh', ],
         in: '*', on: 'docker',
         post: {
-            archiveArtifacts(artifacts: 'dist/*', onlyIfSuccessful: true)
+            archiveArtifacts(artifacts: "${buildDir}/**", onlyIfSuccessful: true)
         },
     ]
 }

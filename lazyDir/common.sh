@@ -1,7 +1,9 @@
 #!/bin/bash -e
 
 # Define some default value, in case the environment is not set
-: ${DIST:='unknown'}
+: ${LAZY_LABEL:='unknown'}
+# Export LAZY_LABEL as DIST for later use
+export DIST=${LAZY_LABEL}
 
 case "${DIST}" in
 	centos*)
