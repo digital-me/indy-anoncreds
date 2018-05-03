@@ -5,17 +5,21 @@
 # Export LAZY_LABEL as DIST for later use
 export DIST=${LAZY_LABEL}
 
+# Paths to general tools
+RSYNC='/usr/bin/rsync'
+GZIP='/bin/gzip'
+
 case "${DIST}" in
 	centos*)
 		PYTHON='/bin/python3.5'
-		PYTHON_PREFIX="$(rpm -q --whatprovides ${PYTHON} --queryformat '%{name}' | cut -d'-' -f1)"
+		PYTHON_PREFIX="$(rpm -q --whatprovides ${PYTHON} --queryformat '%{name}' | cut -d'-' -f1 || echo 'python35u')"
 		PIP='/bin/pip3.5'
 		PKG_EXT='rpm'
 		PKG_MNG='/usr/bin/yum'
 	;;
 	ubuntu*)
 		PYTHON='/usr/bin/python3.5'
-		PYTHON_PREFIX="$(dpkg-query --search ${PYTHON} | cut -d'-' -f1)"
+		PYTHON_PREFIX="$(dpkg-query --search ${PYTHON} | cut -d'-' -f1 || echo '')"
 		PIP='/usr/bin/pip3'
 		PKG_EXT='deb'
 		PKG_MNG='/usr/bin/apt-get'
@@ -30,5 +34,5 @@ case "${DIST}" in
 	;;
 esac
 
-PYTHON_VER_STR="$(${PYTHON} --version)"
+PYTHON_VER_STR="$(${PYTHON} --version 2> /dev/null || echo 'unknown')"
 PYTHON_VER="${PYTHON_VER_STR##* }"

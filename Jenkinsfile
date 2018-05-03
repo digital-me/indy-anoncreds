@@ -24,6 +24,7 @@ lazyConfig(
     name: 'indy-anoncreds',
     inLabels: [ 'centos-7', 'ubuntu-16', ],
     noPoll: '(.+_.+)',   // Don't poll private nor deploy branches
+    env: [ REPO_BASEURL: 'ssh://orion.boxtel:/var/mrepo', ],
 )
 
 // CI Pipeline - as long as the common library can be loaded
@@ -54,6 +55,21 @@ lazyStage {
         in: '*', on: 'docker',
         post: {
             archiveArtifacts(artifacts: "${buildDir}/**", onlyIfSuccessful: true)
+        },
+    ]
+}
+
+// Publish the packages
+lazyStage {
+    name = 'publish'
+    tasks = [
+        pre: {
+            unarchive(mapping:["${buildDir}/" : '.'])
+        },
+        run: [ 'repos.sh', ],
+        in: [ 'centos-7', ], on: 'docker',
+        post: {
+            sh ("tree ${buildDir}/**")
         },
     ]
 }
