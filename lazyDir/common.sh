@@ -7,7 +7,14 @@ export DIST=${LAZY_LABEL}
 
 # Paths to general tools
 RSYNC='/usr/bin/rsync'
+: ${RSYNC_OPTIONS:="-hal --stats --exclude=\"lost+found\""}
 GZIP='/bin/gzip'
+
+# Set some dry-run options/arguments
+if [ -n "${DRYRUN}" && "${DRYRUN}" != '0' && "${DRYRUN}" != 'false' ]; then
+	DRY_CMD='echo '
+	DRY_ARG='-n'
+fi
 
 case "${DIST}" in
 	centos*)
