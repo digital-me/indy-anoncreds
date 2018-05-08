@@ -24,7 +24,7 @@ lazyConfig(
     name: 'indy-anoncreds',
     inLabels: [ 'centos-7', 'ubuntu-16', ],
     noPoll: '(.+_.+)',   // Don't poll private nor deploy branches
-    env: [ DRYRUN: false, REPO_DEST: 'orion.boxtel:/var/mrepo', ],
+    env: [ DRYRUN: false, REPO_DEST: 'orion.boxtel:/var/mrepo/indy', ],
 )
 
 // CI Pipeline - as long as the common library can be loaded
