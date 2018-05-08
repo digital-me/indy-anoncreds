@@ -50,7 +50,6 @@ function build_from_pypi {
 		--log warn \
 		--python-package-name-prefix "${PYTHON_PREFIX}" \
 		--python-bin "${PYTHON}" \
-		--python-pip "${PIP}" \
 		--exclude '*.pyc' \
 		--exclude '*.pyo' \
 		${EXTRA_DEPENDENCE} \
