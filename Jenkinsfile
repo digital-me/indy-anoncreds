@@ -24,7 +24,7 @@ lazyConfig(
     name: 'indy-anoncreds',
     inLabels: [ 'centos-7', 'ubuntu-16', ],
     noPoll: '(.+_.+)',   // Don't poll private nor deploy branches
-    env: [ DRYRUN: false, REPO_DEST: 'orion.boxtel:/var/mrepo/indy', ],
+    env: [ DRYRUN: false, REPO_DEST: 'root@orion1.boxtel:/var/mrepo/indy', ],
 )
 
 // CI Pipeline - as long as the common library can be loaded
@@ -71,7 +71,7 @@ lazyStage {
         post: {
             sh("ls -lA ${buildDir}/*")
             sshagent(credentials: ['bot-ci-dgm']) {
-                sh("scp -r ${buildDir} root@orion1.boxtel:/var/tmp")
+                sh("scp -r ${buildDir}/* ${env.REPO_DEST}")
             }
         },
     ]
