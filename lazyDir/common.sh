@@ -11,7 +11,7 @@ RSYNC='/usr/bin/rsync'
 GZIP='/bin/gzip'
 
 # Set some dry-run options/arguments
-if [ -n "${DRYRUN}" && "${DRYRUN}" != '0' && "${DRYRUN}" != 'false' ]; then
+if [ -n "${DRYRUN}" -a "${DRYRUN}" != '0' -a "${DRYRUN}" != 'false' ]; then
 	DRY_CMD='echo '
 	DRY_ARG='-n'
 fi
@@ -19,14 +19,14 @@ fi
 case "${DIST}" in
 	centos*)
 		PYTHON='/bin/python3.5'
-		PYTHON_PREFIX="$(rpm -q --whatprovides ${PYTHON} --queryformat '%{name}' | cut -d'-' -f1 || echo 'python35u')"
+		PYTHON_PREFIX="$(rpm -q --whatprovides ${PYTHON} --queryformat '%{name}' | cut -d'-' -f1 2> /dev/null || echo 'python35u')"
 		PIP='/bin/pip3.5'
 		PKG_EXT='rpm'
 		PKG_MNG='/usr/bin/yum'
 	;;
 	ubuntu*)
 		PYTHON='/usr/bin/python3.5'
-		PYTHON_PREFIX="$(dpkg-query --search ${PYTHON} | cut -d'-' -f1 || echo '')"
+		PYTHON_PREFIX="$(dpkg-query --search ${PYTHON} 2> /dev/null | cut -d'-' -f1 || echo '')"
 		PIP='/usr/bin/pip3'
 		PKG_EXT='deb'
 		PKG_MNG='/usr/bin/apt-get'
