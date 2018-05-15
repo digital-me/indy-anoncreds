@@ -8,7 +8,7 @@ WDIR="${PWD}"
 source "${SDIR}/../common.sh"
 
 # Prepare folder to store packages
-OUTPUT_PATH="${1:-"${PWD}/dist/${DIST}"}"
+: ${OUTPUT_PATH:="${1:-"${PWD}/dist/${DIST}"}"}
 [ -d "${OUTPUT_PATH}" ] || mkdir -p "${OUTPUT_PATH}" 
 
 # Prepare temp folder to build packages 

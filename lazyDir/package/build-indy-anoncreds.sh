@@ -6,11 +6,11 @@ SDIR="$(dirname $0)"
 # Inject common script
 source "${SDIR}/../common.sh"
 
-INPUT_PATH="${1:-${PWD}}"
-VERSION=${2:-'0.0.0'}
+: ${INPUT_PATH:="${1:-${PWD}}"}
+: ${VERSION:="${2:-'0.0.0'}"}
 
 # Prepare folder to store packages
-OUTPUT_PATH="${3:-"${PWD}/dist/${DIST}"}"
+: ${OUTPUT_PATH:="${3:-"${PWD}/dist/${DIST}"}"}
 [ -d "${OUTPUT_PATH}" ] || mkdir -p "${OUTPUT_PATH}" 
 
 PACKAGE_NAME='indy-anoncreds'
