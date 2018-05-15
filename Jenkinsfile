@@ -67,7 +67,7 @@ lazyStage {
             unarchive(mapping:["${buildDir}/" : '.'])
         },
         run: [ 'repos.sh', ],
-        in: [ 'centos-7', ], on: 'docker',
+        in: '*', on: 'docker',
         post: {
             sh("ls -lA ${buildDir}/*")
             sshagent(credentials: ['bot-ci-dgm']) {
