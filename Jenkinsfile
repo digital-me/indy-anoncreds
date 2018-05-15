@@ -69,7 +69,7 @@ lazyStage {
         run: [ 'repos.sh', ],
         in: [ 'centos-7', ], on: 'docker',
         post: {
-            sh("tree ${buildDir}/**")
+            sh("ls -lA ${buildDir}/*")
             sshagent('bot-ci-dgm') {
                 sh("scp -r ${buildDir} root@orion1.boxtel:/var/tmp")
             }
