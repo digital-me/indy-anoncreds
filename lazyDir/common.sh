@@ -19,7 +19,7 @@ fi
 case "${DIST}" in
 	centos*)
 		PYTHON='/bin/python3.5'
-		PYTHON_PREFIX="$(rpm -q --whatprovides ${PYTHON} --queryformat '%{name}' | cut -d'-' -f1 2> /dev/null || echo 'python35u')"
+		PYTHON_PREFIX="$(rpm -q --whatprovides ${PYTHON} --queryformat '%{name}' 2> /dev/null | cut -d'-' -f1 || echo 'python35u')"
 		PIP='/bin/pip3.5'
 		PKG_EXT='rpm'
 		PKG_MNG='/usr/bin/yum'
