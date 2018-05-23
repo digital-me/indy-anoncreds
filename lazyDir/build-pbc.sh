@@ -3,6 +3,7 @@
 # Define variables and parameters
 : ${TARGET:="${1:-test}"}
 : ${GIT_URL:="${3:-https://github.com/blynn/pbc.git}"}
+: ${DIST:="${LAZY_LABEL:-ubuntu}"}
 
 # Map version to GIT ref if required
 case "$2" in
@@ -48,21 +49,25 @@ case "${TARGET}" in
 		grep -R '/usr/local/lib' /etc/ld.so.conf.d || echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
 		/sbin/ldconfig
 	;;
-	rpm)
-		mkdir -p rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS,TMP}
-		git archive --format=zip --prefix="pbc-${GIT_REF}/" -o "rpmbuild/SOURCES/${GIT_REF}.zip" "${GIT_REF}"
-		cp redhat/libpbc.spec rpmbuild/SPECS
-		pushd rpmbuild
-		/usr/bin/rpmbuild --quiet --define "_topdir ${PWD}" --define "_git_ref ${GIT_REF}" -bb SPECS/libpbc.spec
-		mv RPMS/*/*.rpm "${WDIR}"
-		popd
-	;;
-	deb)
-		echo "Packaging in ${PWD}:"
-		/usr/bin/dpkg-buildpackage -b -uc -us > /dev/null
-		rm -f ../libpbc_*.changes	# Avoid polluting working dir
-		mv ../*.deb "${WDIR}"
-	;;
+	package)
+		case "${DIST}" in
+			centos*)
+				mkdir -p rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS,TMP}
+				git archive --format=zip --prefix="pbc-${GIT_REF}/" -o "rpmbuild/SOURCES/${GIT_REF}.zip" "${GIT_REF}"
+				cp redhat/libpbc.spec rpmbuild/SPECS
+				pushd rpmbuild
+				/usr/bin/rpmbuild --quiet --define "_topdir ${PWD}" --define "_git_ref ${GIT_REF}" -bb SPECS/libpbc.spec
+				mv RPMS/*/*.rpm "${WDIR}"
+				popd
+			;;
+			ubuntu*)
+				echo "Packaging in ${PWD}:"
+				/usr/bin/dpkg-buildpackage -b -uc -us > /dev/null
+				rm -f ../libpbc_*.changes	# Avoid polluting working dir
+				mv ../*.deb "${WDIR}"
+			;;
+		esac
+	;;	
 	*)
 		echo "Unknown TARGET (${TARGET})" && exit 1
 	;;
