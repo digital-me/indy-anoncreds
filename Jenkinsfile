@@ -1,18 +1,34 @@
 #!groovy
 
-// Load Jenkins shared libraries common to all projects
-def libCmn = [
-	remote:		'https://github.com/digital-me/jenkins-lib-lazy.git',
-	branch:		'master',
+// Load Jenkins shared library common to all Indy projects
+def libIndy = [
+	remote:			'https://github.com/digital-me/indy-jenkins-pipeline-lib.git',
+	branch:				'devel_bear',
+	credentialsId:	'bot-ci-dgm-rsa',
+]
+
+library(
+	identifier:		"libIndy@${libIndy.branch}",
+	retriever:		modernSCM([
+		$class:				'GitSCMSource',
+		remote:			libIndy.remote,
+		credentialsId:	libIndy.credentialsId
+	])
+)
+
+// Load Jenkins lazy shared library until we merge its features in the main one
+def libLazy = [
+	remote:			'https://github.com/digital-me/jenkins-lib-lazy.git',
+	branch:				'devel_bear',
 	credentialsId:	null,
 ]
 
 library(
-	identifier: "libCmn@${libCmn.branch}",
-	retriever: modernSCM([
-		$class: 'GitSCMSource',
-		remote: libCmn.remote,
-		credentialsId: libCmn.credentialsId
+	identifier:		"libLazy@${libLazy.branch}",
+	retriever:		modernSCM([
+		$class:				'GitSCMSource',
+		remote:			libLazy.remote,
+		credentialsId:	libLazy.credentialsId
 	])
 )
 
@@ -27,6 +43,7 @@ lazyConfig(
     env: [
         DRYRUN: false,
         REPO_DEST: 'root@orion1.boxtel:/var/mrepo/indy',
+        REPO_CRED: 'bot-ci-dgm',
         VERSION: '1.0.46',
     ],
 )
@@ -55,7 +72,11 @@ lazyStage {
 lazyStage {
     name = 'package'
     tasks = [
-        run: [ 'build-indy-anoncreds.sh', 'build-3rd-parties.sh', ],
+        run: [
+			'build-indy-anoncreds.sh',
+			'build-pbc.sh package indy-0.5.14 https://github.com/digital-me/pbc.git',
+			'build-3rd-parties.sh',
+		],
         in: '*', on: 'docker',
         post: {
             archiveArtifacts(artifacts: "${buildDir}/**", onlyIfSuccessful: true)
@@ -73,8 +94,8 @@ lazyStage {
         run: [ 'repos.sh', ],
         in: '*', on: 'docker',
         post: {
-            sh("ls -lA ${buildDir}/*")
-            sshagent(credentials: ['bot-ci-dgm']) {
+            //sh("ls -lA ${buildDir}/*")
+            sshagent(credentials: [env.REPO_CRED]) {
                 sh("scp -r ${buildDir}/* ${env.REPO_DEST}")
             }
         },
