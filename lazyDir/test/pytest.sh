@@ -3,7 +3,7 @@
 # Get the script dir
 SDIR="$(dirname $0)"
 
-# Inject common script
+# Inject common script from parent directory
 source "${SDIR}/../common.sh"
 
 echo "Running Python (v${PYTHON_VER}) testing scripts for ${DIST}:"
