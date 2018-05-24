@@ -3,8 +3,8 @@
 # Get the script dir
 SDIR="$(dirname $0)"
 
-# Inject common script
-source "${SDIR}/../common.sh"
+# Inject common script from stage dir or parent dir
+source "${SDIR}/common.sh" || source "${SDIR}/../common.sh"
 
 : ${INPUT_PATH:="${1:-${PWD}}"}
 : ${VERSION:="${2:-'0.0.0'}"}

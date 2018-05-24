@@ -3,8 +3,8 @@
 # Get the script dir
 SDIR="$(dirname $0)"
 
-# Inject common script from parent directory
-source "${SDIR}/../common.sh"
+# Inject common script from stage dir or parent dir
+source "${SDIR}/common.sh" || source "${SDIR}/../common.sh"
 
 echo "Running Python (v${PYTHON_VER}) testing scripts for ${DIST}:"
 

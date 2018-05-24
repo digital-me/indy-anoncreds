@@ -52,19 +52,31 @@ lazyConfig(
 // Validate the code
 lazyStage {
     name = 'validate'
-    tasks = [ run: 'flake.sh', in: '*', on: 'docker' ]
+    tasks = [
+		run: [
+			'common.sh',
+			'flake.sh',
+		],
+		in: '*',
+		on: 'docker'
+	]
 }
 
 // Test the code
 lazyStage {
     name = 'test'
     tasks = [
-        run: 'pytest.sh', in: '*', on: 'docker',
+        run: [
+			'common.sh',
+			'pytest.sh',
+		],
+		in: '*',
+		on: 'docker',
         args: '--network host',
         post: {
             archiveArtifacts(artifacts: 'test-results/*.txt', allowEmptyArchive: true)
             junit(testResults: 'test-results/*.xml', allowEmptyResults: true)
-	},
+		},
     ]
 }
 
@@ -73,6 +85,7 @@ lazyStage {
     name = 'package'
     tasks = [
         run: [
+			'common.sh',
 			'indy-anoncreds.sh',
 			'pbc.sh indy-0.5.14 https://github.com/digital-me/pbc.git',
 			'3rd-parties.sh',
@@ -91,7 +104,10 @@ lazyStage {
         pre: {
             unarchive(mapping:["${buildDir}/" : '.'])
         },
-        run: [ 'repos.sh', ],
+        run: [
+			'common.sh',
+			'repos.sh',
+		],
         in: '*', on: 'docker',
         post: {
             //sh("ls -lA ${buildDir}/*")
