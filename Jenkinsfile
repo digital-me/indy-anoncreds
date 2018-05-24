@@ -52,14 +52,14 @@ lazyConfig(
 // Validate the code
 lazyStage {
     name = 'validate'
-    tasks = [ run: 'inside.sh', in: '*', on: 'docker' ]
+    tasks = [ run: 'flake.sh', in: '*', on: 'docker' ]
 }
 
 // Test the code
 lazyStage {
     name = 'test'
     tasks = [
-        run: 'inside.sh', in: '*', on: 'docker',
+        run: 'pytest.sh', in: '*', on: 'docker',
         args: '--network host',
         post: {
             archiveArtifacts(artifacts: 'test-results/*.txt', allowEmptyArchive: true)
@@ -73,9 +73,9 @@ lazyStage {
     name = 'package'
     tasks = [
         run: [
-			'build-indy-anoncreds.sh',
-			'build-pbc.sh package indy-0.5.14 https://github.com/digital-me/pbc.git',
-			'build-3rd-parties.sh',
+			'indy-anoncreds.sh',
+			'pbc.sh indy-0.5.14 https://github.com/digital-me/pbc.git',
+			'3rd-parties.sh',
 		],
         in: '*', on: 'docker',
         post: {
