@@ -1,0 +1,7 @@
+# The following python modules will be packaged by fpm from 3rd-parties.sh script (see Jenkins shared lib)
+# This should at least contains the modules listed in the main section of requires.txt,
+# plus any module that are not available from other repos (IUS for now)
+base58==1.0.0
+Charm-Crypto
+lazy-object-proxy==1.3.1
+pyparsing==2.2.0
