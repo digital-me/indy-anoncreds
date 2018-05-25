@@ -107,10 +107,10 @@ lazyStage {
         run: [
 			'common.sh',
 			'repos.sh',
+			'install.sh indy-anoncreds',
 		],
         in: '*', on: 'docker',
         post: {
-            //sh("ls -lA ${buildDir}/*")
             sshagent(credentials: [env.REPO_CRED]) {
                 sh("scp -r ${buildDir}/* ${env.REPO_DEST}")
             }
