@@ -15,10 +15,25 @@ RUN yum -q clean expire-cache \
 	which \
 	&& yum -q clean packages
 
+# Add PIUS repo
+RUN yum -q clean expire-cache \
+	&& yum -y install https://centos7.iuscommunity.org/ius-release.rpm \
+	&& rpm --import /etc/pki/rpm-gpg/IUS-COMMUNITY-GPG-KEY
+
+# Add Indy repo
+ARG repo_baseurl=http://orion.boxtel
+ARG repo_path=rpm/sovrin
+ARG repo_branch=master
+RUN echo "[indy]" > /etc/yum.repos.d/indy.repo \
+	&& echo "name=Hyperledger Indy Packages for Enterprise Linux 7 - $basearch" >> /etc/yum.repos.d/indy.repo \
+	&& echo "baseurl=${repo_baseurl}/${repo_path}/${repo_branch}/" >> /etc/yum.repos.d/indy.repo \
+	&& echo "enabled=1" >> /etc/yum.repos.d/indy.repo \
+	&& echo "gpgcheck=0" >> /etc/yum.repos.d/indy.repo
+
 # Install extra deps \
 RUN yum -q clean expire-cache \
 	&& yum -y install \
-	rsync \
+	sudo \
 	createrepo \
 	&& yum -q clean packages
 
@@ -30,6 +45,9 @@ ARG group=indy
 
 # Add user to build
 RUN groupadd -g "${gid}" "${group}" && useradd -ms /bin/bash -g "${group}" -u "${uid}" "${user}"
+
+# Add user to sudoers
+RUN echo "${user} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # Get script directory from lazyLib at last to avoid warning w/o invalidating the cache 
 ARG dir=.

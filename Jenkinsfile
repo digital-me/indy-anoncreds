@@ -42,7 +42,8 @@ lazyConfig(
     noPoll: '(.+_.+)',   // Don't poll private nor deploy branches
     env: [
         DRYRUN: false,
-        REPO_DEST: 'root@orion1.boxtel:/var/mrepo/indy',
+        REPO_DEST: 'root@orion1.boxtel:/var/www/html/indy',
+		REPO_BRANCH: 'master',
         REPO_CRED: 'bot-ci-dgm',
         VERSION: '1.0.46',
     ],
@@ -102,6 +103,9 @@ lazyStage {
     name = 'publish'
     tasks = [
         pre: {
+            sshagent(credentials: [env.REPO_CRED]) {
+				sh("scp -r ${env.REPO_DEST}/${env.REPO_BRANCH} ${buildDir}")
+            }
             unarchive(mapping:["${buildDir}/" : '.'])
         },
         run: [
@@ -112,7 +116,7 @@ lazyStage {
         in: '*', on: 'docker',
         post: {
             sshagent(credentials: [env.REPO_CRED]) {
-                sh("scp -r ${buildDir}/* ${env.REPO_DEST}")
+				sh("scp -r ${buildDir}/* ${env.REPO_DEST}/${env.REPO_BRANCH}")
             }
         },
     ]
