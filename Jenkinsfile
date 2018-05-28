@@ -42,7 +42,9 @@ lazyConfig(
     noPoll: '(.+_.+)',   // Don't poll private nor deploy branches
     env: [
         DRYRUN: false,
-        REPO_DEST: 'root@orion1.boxtel:/var/www/html/indy',
+        REPO_USER: 'root',
+		REPO_HOST: 'orion1.boxtel',
+		REPO_DIR: '/var/www/html/indy',
 		REPO_BRANCH: 'master',
         REPO_CRED: 'bot-ci-dgm',
         VERSION: '1.0.46',
@@ -104,7 +106,9 @@ lazyStage {
     tasks = [
         pre: {
             sshagent(credentials: [env.REPO_CRED]) {
-				sh("scp -r ${env.REPO_DEST}/${env.REPO_BRANCH} ${buildDir}")
+				// Downloading existing packages and cleaning current metadata
+				sh("scp -BC -r ${env.REPO_USER}@${env.REPO_HOST}:${env.REPO_DIR}/${env.REPO_BRANCH} ${buildDir}")
+				sh("cd ${buildDir} && rm -f */Packages.gz */repodata/*.gz || true")
             }
             unarchive(mapping:["${buildDir}/" : '.'])
         },
@@ -116,7 +120,9 @@ lazyStage {
         in: '*', on: 'docker',
         post: {
             sshagent(credentials: [env.REPO_CRED]) {
-				sh("scp -r ${buildDir}/* ${env.REPO_DEST}/${env.REPO_BRANCH}")
+				// Purging existing metadata before publishing
+				sh("ssh -o BatchMode=yes ${env.REPO_USER}@${env.REPO_HOST} \"cd ${env.REPO_DIR}/${env.REPO_BRANCH} && rm -f */Packages.gz */repodata/*.gz || true\"")
+				sh("scp -BC -r ${buildDir}/* ${env.REPO_USER}@${env.REPO_HOST}:${env.REPO_DIR}/${env.REPO_BRANCH}")
             }
         },
     ]
