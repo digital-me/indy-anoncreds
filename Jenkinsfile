@@ -106,7 +106,7 @@ lazyStage {
             sshagent(credentials: [env.REPO_CRED]) {
 				// Downloading existing packages and cleaning current metadata
 				sh("scp -qpBC -r ${env.REPO_USER}@${env.REPO_HOST}:${env.REPO_DIR}/${env.REPO_BRANCH} ${env.BUILD_DIR}")
-				sh("rm -f ${env.BUILD_DIR}/*/Packages.gz ${env.BUILD_DIR}/*/repodata/*.gz || true")
+				sh("rm -f ${env.BUILD_DIR}/*/binary/Packages.gz ${env.BUILD_DIR}/*/repodata/*.gz || true")
 				sh("pwd && ls -lAR ${env.BUILD_DIR}")
             }
             unarchive(mapping:["${env.BUILD_DIR}/" : '.'])
@@ -120,7 +120,7 @@ lazyStage {
         post: {
             sshagent(credentials: [env.REPO_CRED]) {
 				// Purging existing metadata before publishing
-				sh("ssh -o BatchMode=yes ${env.REPO_USER}@${env.REPO_HOST} \"cd ${env.REPO_DIR}/${env.REPO_BRANCH} && rm -f */Packages.gz */repodata/*.gz || true\"")
+				sh("ssh -o BatchMode=yes ${env.REPO_USER}@${env.REPO_HOST} \"cd ${env.REPO_DIR}/${env.REPO_BRANCH} && rm -f */binary/Packages.gz */repodata/*.gz || true\"")
 				sh("scp -qpBC -r ${env.BUILD_DIR}/* ${env.REPO_USER}@${env.REPO_HOST}:${env.REPO_DIR}/${env.REPO_BRANCH}")
             }
         },
