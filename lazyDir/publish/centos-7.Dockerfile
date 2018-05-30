@@ -12,6 +12,7 @@ RUN yum -q clean expire-cache \
 	git \
 	wget \
 	unzip \
+	sudo \
 	which \
 	&& yum -q clean packages
 
@@ -33,7 +34,6 @@ RUN echo "[indy]" > /etc/yum.repos.d/indy.repo \
 # Install extra deps \
 RUN yum -q clean expire-cache \
 	&& yum -y install \
-	sudo \
 	createrepo \
 	&& yum -q clean packages
 

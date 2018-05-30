@@ -12,6 +12,7 @@ RUN yum -q clean expire-cache \
 	git \
 	wget \
 	unzip \
+	sudo \
 	which \
 	&& yum -q clean packages
 
