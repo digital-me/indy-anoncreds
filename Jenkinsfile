@@ -32,16 +32,14 @@ library(
 	])
 )
 
-// Define the directory where the package will be build
-def buildDir = 'dist'
-
 // Initialize configuration
 lazyConfig(
     name: 'indy-anoncreds',
     inLabels: [ 'centos-7', 'ubuntu-16', ],
-    noPoll: '(.+_.+)',   // Don't poll private nor deploy branches
+    noPoll: '(.+_.+)',									// Don't poll private nor deploy branches
     env: [
         DRYRUN: false,
+		BUILD_DIR: 'dist',								// directory where the packages and repos will be build
         REPO_USER: 'root',
 		REPO_HOST: 'orion1.boxtel',
 		REPO_DIR: '/var/www/html/indy',
@@ -95,7 +93,7 @@ lazyStage {
 		],
         in: '*', on: 'docker',
         post: {
-            archiveArtifacts(artifacts: "${buildDir}/**", onlyIfSuccessful: true)
+            archiveArtifacts(artifacts: "${env.BUILD_DIR}/**", onlyIfSuccessful: true)
         },
     ]
 }
@@ -107,10 +105,11 @@ lazyStage {
         pre: {
             sshagent(credentials: [env.REPO_CRED]) {
 				// Downloading existing packages and cleaning current metadata
-				sh("scp -BC -r ${env.REPO_USER}@${env.REPO_HOST}:${env.REPO_DIR}/${env.REPO_BRANCH} ${buildDir}")
-				sh("cd ${buildDir} && rm -f */Packages.gz */repodata/*.gz || true")
+				sh("scp -qpBC -r ${env.REPO_USER}@${env.REPO_HOST}:${env.REPO_DIR}/${env.REPO_BRANCH} ${env.BUILD_DIR}")
+				sh("rm -f ${env.BUILD_DIR}/*/Packages.gz ${env.BUILD_DIR}/*/repodata/*.gz || true")
+				sh("pwd && ls -lAR ${env.BUILD_DIR}")
             }
-            unarchive(mapping:["${buildDir}/" : '.'])
+            unarchive(mapping:["${env.BUILD_DIR}/" : '.'])
         },
         run: [
 			'common.sh',
@@ -122,7 +121,7 @@ lazyStage {
             sshagent(credentials: [env.REPO_CRED]) {
 				// Purging existing metadata before publishing
 				sh("ssh -o BatchMode=yes ${env.REPO_USER}@${env.REPO_HOST} \"cd ${env.REPO_DIR}/${env.REPO_BRANCH} && rm -f */Packages.gz */repodata/*.gz || true\"")
-				sh("scp -BC -r ${buildDir}/* ${env.REPO_USER}@${env.REPO_HOST}:${env.REPO_DIR}/${env.REPO_BRANCH}")
+				sh("scp -qpBC -r ${env.BUILD_DIR}/* ${env.REPO_USER}@${env.REPO_HOST}:${env.REPO_DIR}/${env.REPO_BRANCH}")
             }
         },
     ]
