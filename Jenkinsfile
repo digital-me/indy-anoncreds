@@ -39,7 +39,7 @@ lazyConfig(
     noPoll: '(.+_.+)',									// Don't poll private nor deploy branches
     env: [
         DRYRUN: false,
-		BUILD_DIR: 'dist',								// directory where the packages and repos will be build
+		BUILD_DIR: 'target',								// directory where the packages and repos will be build
         REPO_USER: 'root',
 		REPO_HOST: 'orion1.boxtel',
 		REPO_DIR: '/var/www/html/indy',
@@ -107,10 +107,10 @@ lazyStage {
 				// Downloading existing packages and cleaning current metadata
 				sh("mkdir -p ${env.BUILD_DIR}/dists/${env.LAZY_LABEL}")
 				sh("scp -qpBC -r ${env.REPO_USER}@${env.REPO_HOST}:${env.REPO_DIR}/dists/${env.LAZY_LABEL}/${env.REPO_BRANCH} ${env.BUILD_DIR}/dists/${env.LAZY_LABEL}")
-				sh("rm -f ${env.BUILD_DIR}/dists/${env.LAZY_LABEL}/${env.REPO_BRANCH}/*/Packages* ${env.BUILD_DIR}/dists/${env.LAZY_LABEL}/${env.REPO_BRANCH}/repodata/*.gz || true")
-				sh("pwd && ls -lAR ${env.BUILD_DIR}")
+				sh("cd ${env.BUILD_DIR}/dists/${env.LAZY_LABEL}/${env.REPO_BRANCH} && { rm -f */Packages* repodata/*.gz || true; }")
             }
             unarchive(mapping:["${env.BUILD_DIR}/" : '.'])
+			sh("pwd && ls -lAR ${env.BUILD_DIR}")
         },
         run: [
 			'common.sh',
@@ -121,7 +121,7 @@ lazyStage {
         post: {
             sshagent(credentials: [env.REPO_CRED]) {
 				// Purging existing metadata before publishing
-				sh("ssh -o BatchMode=yes ${env.REPO_USER}@${env.REPO_HOST} \"cd ${env.REPO_DIR}/dists/${env.LAZY_LABEL}/${env.REPO_BRANCH} && rm -f */Packages* repodata/*.gz || true\"")
+				sh("ssh -o BatchMode=yes ${env.REPO_USER}@${env.REPO_HOST} \"cd ${env.REPO_DIR}/dists/${env.LAZY_LABEL}/${env.REPO_BRANCH} && { rm -f */Packages* repodata/*.gz || true; }\"")
 				sh("scp -qpBC -r ${env.BUILD_DIR}/dists/${env.LAZY_LABEL}/${env.REPO_BRANCH} ${env.REPO_USER}@${env.REPO_HOST}:${env.REPO_DIR}/dists/${env.LAZY_LABEL}")
             }
         },

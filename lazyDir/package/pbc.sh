@@ -1,26 +1,14 @@
 #!/bin/bash -e
 
-# Get the script dir
+# Get the relative dir to this script and source common bloc
 SDIR="$(dirname $0)"
+source "${SDIR}/common.sh" || source "${SDIR}/../common.sh"
 
 # Call the main script to checkout and setup PBC from parent directory
 source "${SDIR}/../build-pbc.sh" setup $@
 
-# Define variables and parameters
-: ${DIST:="${LAZY_LABEL}"}
-
-# Try to guess which distro it is if not defined yet
-if [ -z "${DIST}" ]; then
-	if [ -x '/usr/bin/lsb_release' ]; then
-		DIST="$(/usr/bin/lsb_release -si 2> /dev/null | tr '[:upper:]' '[:lower:]' 2> /dev/null)"
-	else
-		# Fallback on the original distro by default
-		DIST="ubuntu"
-	fi
-fi
-
 # Prepare folder to store packages
-: ${OUTPUT_PATH:="${PWD}/dist/${DIST}"}
+: ${OUTPUT_PATH:="${PWD}/${BUILD_DIR}/${DIST}"}
 [ -d "${OUTPUT_PATH}" ] || mkdir -p "${OUTPUT_PATH}"
 
 # Define packaging steps per type of package
