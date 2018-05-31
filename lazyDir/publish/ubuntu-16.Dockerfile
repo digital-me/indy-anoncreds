@@ -31,5 +31,8 @@ ARG group=indy
 # Add user to build
 RUN groupadd -g "${gid}" "${group}" && useradd -ms /bin/bash -g "${group}" -u "${uid}" "${user}"
 
+# Add user to sudoers
+RUN echo "${user} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
 # Get script directory from lazyLib at last to avoid warning w/o invalidating the cache 
 ARG dir=.
