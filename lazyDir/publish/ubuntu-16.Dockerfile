@@ -18,9 +18,15 @@ RUN apt-get -y update \
 # Install extra deps \
 RUN apt-get -y update \
 	&& apt-get -y install \
-	rsync \
 	dpkg-dev \
+	software-properties-common \
 	&& apt-get clean
+
+# Add Indy repo
+ARG repo_baseurl=http://orion.boxtel
+ARG repo_path=deb
+ARG repo_branch=master
+#RUN apt-add-repository -y -u "deb ${repo_baseurl}/${repo_path} xenial ${repo_branch}"
 
 # Parameters for default user:group
 ARG uid=1000
