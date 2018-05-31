@@ -21,6 +21,12 @@ RUN yum -q clean expire-cache \
 	&& yum -y install https://centos7.iuscommunity.org/ius-release.rpm \
 	&& rpm --import /etc/pki/rpm-gpg/IUS-COMMUNITY-GPG-KEY
 
+# Install extra deps \
+RUN yum -q clean expire-cache \
+	&& yum -y install \
+	createrepo \
+	&& yum -q clean packages
+
 # Add Indy repo
 ARG repo_baseurl=http://orion.boxtel
 ARG repo_path=rpm/sovrin
@@ -30,12 +36,6 @@ RUN echo "[indy]" > /etc/yum.repos.d/indy.repo \
 	&& echo "baseurl=${repo_baseurl}/${repo_path}/${repo_branch}/" >> /etc/yum.repos.d/indy.repo \
 	&& echo "enabled=1" >> /etc/yum.repos.d/indy.repo \
 	&& echo "gpgcheck=0" >> /etc/yum.repos.d/indy.repo
-
-# Install extra deps \
-RUN yum -q clean expire-cache \
-	&& yum -y install \
-	createrepo \
-	&& yum -q clean packages
 
 # Parameters for default user:group
 ARG uid=1000
