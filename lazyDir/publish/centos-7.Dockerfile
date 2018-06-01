@@ -28,7 +28,7 @@ RUN yum -q clean expire-cache \
 	&& yum -q clean packages
 
 # Add Indy repo
-ARG repo_baseurl=http://orion.boxtel/
+ARG repo_baseurl=http://orion.boxtel
 ARG repo_path=rpm/sovrin
 ARG repo_branch=master
 RUN echo "[indy]" > /etc/yum.repos.d/indy.repo \
