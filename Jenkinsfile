@@ -45,6 +45,7 @@ lazyConfig(
 		REPO_DIR: '/var/www/html/indy',
 		REPO_BRANCH: 'master',
         REPO_CRED: 'bot-ci-dgm',
+		REPO_BASEURL: 'http://orion.boxtel',
         VERSION: '1.0.46',
     ],
 )

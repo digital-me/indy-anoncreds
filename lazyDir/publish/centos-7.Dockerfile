@@ -28,13 +28,14 @@ RUN yum -q clean expire-cache \
 	&& yum -q clean packages
 
 # Add Indy repo
-ARG repo_baseurl=http://orion.boxtel
+ARG repo_baseurl=http://orion.boxtel/
 ARG repo_path=rpm/sovrin
 ARG repo_branch=master
 RUN echo "[indy]" > /etc/yum.repos.d/indy.repo \
 	&& echo "name=Hyperledger Indy Packages for Enterprise Linux 7 - $basearch" >> /etc/yum.repos.d/indy.repo \
 	&& echo "baseurl=${repo_baseurl}/${repo_path}/centos-7/${repo_branch}/" >> /etc/yum.repos.d/indy.repo \
 	&& echo "enabled=1" >> /etc/yum.repos.d/indy.repo \
+	&& echo "skip_if_unavailable = 1 >> /etc/yum.repos.d/indy.repo \
 	&& echo "gpgcheck=0" >> /etc/yum.repos.d/indy.repo
 
 # Parameters for default user:group
