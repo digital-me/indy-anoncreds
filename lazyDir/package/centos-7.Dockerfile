@@ -1,47 +1,50 @@
 # Pull base image from official repo
-FROM centos:centos7.4.1708
+FROM centos:centos7.5.1804
 
-# Install all current updates
-RUN yum -q clean expire-cache \
+# Enable epel repo and Install all current updates
+RUN yum -q -y update \
+	&& rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7 \
+	&& yum -y install epel-release \
+	&& rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7 \
 	&& yum -y upgrade \
-	&& yum -q clean packages
+	&& yum -q clean all
 
 # Install common requirements
-RUN yum -q clean expire-cache \
+RUN yum -q -y update \
 	&& yum -y install \
 	git \
 	wget \
 	unzip \
-	sudo \
 	which \
-	&& yum -q clean packages
+	&& yum -q clean all
 
 # Install Python 3.5 from PIUS repo
-RUN yum -q clean expire-cache \
+RUN yum -q -y update \
 	&& yum -y install https://centos7.iuscommunity.org/ius-release.rpm \
+	&& rpm --import /etc/pki/rpm-gpg/IUS-COMMUNITY-GPG-KEY \
 	&& yum -y install \
 	python35u \
 	python35u-pip \
 	python35u-setuptools \
-	&& yum -q clean packages
+	&& yum -q clean all
 
 # Install some Python dev tools
-RUN yum -q clean expire-cache \
+RUN yum -q -y update \
 	&& yum -y install \
 	python35u-devel \
 	python35u-libs \
 	python35u-tools \
-	&& yum -q clean packages
+	&& yum -q clean all
 
 # Install extra dev tools
-RUN yum -q clean expire-cache \
+RUN yum -q -y update \
 	&& yum -y install \
 	gcc \
 	make \
-	&& yum -q clean packages
+	&& yum -q clean all
 
 # Install extra deps to build PBC
-RUN yum -q clean expire-cache \
+RUN yum -q -y update \
 	&& yum -y install \
 	which \
 	openssl-devel \
@@ -51,7 +54,7 @@ RUN yum -q clean expire-cache \
 	libtool \
 	automake \
 	file \
-	&& yum -q clean packages
+	&& yum -q clean all
 #	python3-nacl \
 #	libindy-crypto=0.2.0 \
 #	libindy=1.3.1~403 \
@@ -73,18 +76,18 @@ COPY ${dir}/../build-pbc.sh build-pbc.sh
 RUN ./build-pbc.sh install
 
 # Install extra deps to package PBC
-RUN yum -q clean expire-cache \
+RUN yum -q -y update \
 	&& yum -y install \
 	rpm-build \
-	&& yum -q clean packages
+	&& yum -q clean all
 
 # Install extra deps to install Ruby gems
-RUN yum -q clean expire-cache \
+RUN yum -q -y update \
 	&& yum -y install \
 	ruby \
 	ruby-devel \
 	rubygems \
-	&& yum -q clean packages
+	&& yum -q clean all
 
 # Install FPM gem to package Python modules
 RUN gem install --no-ri --no-rdoc fpm

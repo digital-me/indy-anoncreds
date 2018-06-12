@@ -1,31 +1,39 @@
 # Pull base image from official repo
-FROM centos:centos7.4.1708
+FROM centos:centos7.5.1804
 
-# Install all current updates
-RUN yum -q clean expire-cache \
+# Enable epel repo and Install all current updates
+RUN yum -q -y update \
+	&& rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7 \
+	&& yum -y install epel-release \
+	&& rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7 \
 	&& yum -y upgrade \
-	&& yum -q clean packages
+	&& yum -q clean all
 
 # Install common requirements
-RUN yum -q clean expire-cache \
+RUN yum -q -y update \
 	&& yum -y install \
 	git \
 	wget \
 	unzip \
-	sudo \
 	which \
-	&& yum -q clean packages
+	&& yum -q clean all
 
-# Add PIUS repo
-RUN yum -q clean expire-cache \
+# Install Python 3.5 from PIUS repo
+RUN yum -q -y update \
 	&& yum -y install https://centos7.iuscommunity.org/ius-release.rpm \
-	&& rpm --import /etc/pki/rpm-gpg/IUS-COMMUNITY-GPG-KEY
+	&& rpm --import /etc/pki/rpm-gpg/IUS-COMMUNITY-GPG-KEY \
+	&& yum -y install \
+	python35u \
+	python35u-pip \
+	python35u-setuptools \
+	&& yum -q clean all
 
 # Install extra deps \
-RUN yum -q clean expire-cache \
+RUN yum -q -y update \
 	&& yum -y install \
 	createrepo \
-	&& yum -q clean packages
+	sudo \
+	&& yum -q clean all
 
 # Add Indy repo
 ARG repo_baseurl=http://orion.boxtel
