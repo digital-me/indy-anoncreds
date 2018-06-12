@@ -12,7 +12,6 @@ RUN apt-get -y update \
 	git \
 	wget \
 	unzip \
-	sudo \
 	&& apt-get clean
 
 # Install extra deps \
@@ -20,6 +19,7 @@ RUN apt-get -y update \
 	&& apt-get -y install \
 	dpkg-dev \
 	software-properties-common \
+	sudo \
 	&& apt-get clean
 
 # Add Indy repo

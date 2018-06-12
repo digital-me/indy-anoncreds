@@ -12,7 +12,6 @@ RUN apt-get -y update \
 	git \
 	wget \
 	unzip \
-	sudo \
 	&& apt-get clean
 
 # Install Python 3.5
