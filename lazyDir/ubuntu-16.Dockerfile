@@ -1,6 +1,9 @@
 # Pull base image from official repo
 FROM ubuntu:16.04
 
+# Avoid debconf interaction
+ARG DEBIAN_FRONTEND=noninteractive
+
 # Install all current updates
 RUN apt-get -y update \
 	&& apt-get -y dist-upgrade \
