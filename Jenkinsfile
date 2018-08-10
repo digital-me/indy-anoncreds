@@ -59,7 +59,11 @@ lazyConfig(
 // Validate the code
 lazyStage {
     name = 'validate'
+	onlyif = ( lazyConfig['branch'] != releaseBranch ) // Skip when releasing
     tasks = [
+		pre: {
+			currentBuild.displayName = "#${env.BUILD_NUMBER} ${gitLastTag()}"
+		},
 		run: [
 			'common.sh',
 			'flake.sh',
@@ -72,6 +76,7 @@ lazyStage {
 // Test the code
 lazyStage {
     name = 'test'
+	onlyif = ( lazyConfig['branch'] != releaseBranch ) // Skip when releasing
     tasks = [
         run: [
 			'common.sh',
@@ -91,6 +96,9 @@ lazyStage {
 lazyStage {
     name = 'package'
     tasks = [
+		pre: {
+			currentBuild.displayName = "#${env.BUILD_NUMBER} ${gitLastTag()}"
+		},
         run: [
 			'common.sh',
 			'indy-anoncreds.sh',
