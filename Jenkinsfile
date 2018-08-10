@@ -62,7 +62,8 @@ lazyStage {
 	onlyif = ( lazyConfig['branch'] != releaseBranch ) // Skip when releasing
     tasks = [
 		pre: {
-			currentBuild.displayName = "#${env.BUILD_NUMBER} ${gitLastTag()}"
+			//currentBuild.displayName = "#${env.BUILD_NUMBER} ${gitLastTag()}"
+			currentBuild.displayName = "#${env.BUILD_NUMBER} ${env.VERSION}"
 		},
 		run: [
 			'common.sh',
@@ -97,7 +98,8 @@ lazyStage {
     name = 'package'
     tasks = [
 		pre: {
-			currentBuild.displayName = "#${env.BUILD_NUMBER} ${gitLastTag()}"
+			//currentBuild.displayName = "#${env.BUILD_NUMBER} ${gitLastTag()}"
+			currentBuild.displayName = "#${env.BUILD_NUMBER} ${env.VERSION}"
 		},
         run: [
 			'common.sh',
