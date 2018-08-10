@@ -3,7 +3,7 @@
 // Load Jenkins shared library common to all Indy projects
 def libIndy = [
 	remote:			'https://github.com/digital-me/indy-jenkins-pipeline-lib.git',
-	branch:				'devel_bear',
+	branch:			'stable',
 	credentialsId:	'bot-ci-dgm-rsa',
 ]
 
@@ -19,7 +19,7 @@ library(
 // Load Jenkins lazy shared library until we merge its features in the main one
 def libLazy = [
 	remote:			'https://github.com/digital-me/jenkins-lib-lazy.git',
-	branch:				'devel_bear',
+	branch:			'stable',
 	credentialsId:	null,
 ]
 
@@ -32,11 +32,16 @@ library(
 	])
 )
 
+// Define the remotes and the working and deploy branches
+def remote = 'origin'
+def workingBranch = 'master'
+def releaseBranch = 'stable'
+
 // Initialize configuration
 lazyConfig(
     name: 'indy-anoncreds',
     inLabels: [ 'centos-7', 'ubuntu-16', ],
-    noPoll: '(.+_.+)',									// Don't poll private nor deploy branches
+    noIndex: '(.+_.+)',									// Don't poll private nor deploy branches
     env: [
         DRYRUN: false,
 		BUILD_DIR: 'target',								// directory where the packages and repos will be build
@@ -48,6 +53,7 @@ lazyConfig(
 		REPO_BASEURL: 'http://orion.boxtel',
         VERSION: '1.0.46',
     ],
+	noIndex:	"(${releaseBranch}|.+_.+)",	// Avoid automatic indexing for release and private branches
 )
 
 // CI Pipeline - as long as the common library can be loaded
