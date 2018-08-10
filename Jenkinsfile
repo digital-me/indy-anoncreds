@@ -41,7 +41,6 @@ def releaseBranch = 'stable'
 lazyConfig(
     name: 'indy-anoncreds',
     inLabels: [ 'centos-7', 'ubuntu-16', ],
-    noIndex: '(.+_.+)',									// Don't poll private nor deploy branches
     env: [
         DRYRUN: false,
 		BUILD_DIR: 'target',								// directory where the packages and repos will be build
@@ -53,7 +52,7 @@ lazyConfig(
 		REPO_BASEURL: 'http://orion.boxtel',
         VERSION: '1.0.46',
     ],
-	noIndex:	"(${releaseBranch}|.+_.+)",	// Avoid automatic indexing for release and private branches
+	noIndex:	"(${releaseBranch})",	// Avoid automatic indexing for release and private branches
 )
 
 // CI Pipeline - as long as the common library can be loaded
